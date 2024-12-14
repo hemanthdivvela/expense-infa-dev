@@ -18,7 +18,7 @@ variable "common_tags" {
   
 }
 
-variable "zone-name" {
+variable "zone_name" {
     default = "hemanth78s.online"
   
 }
