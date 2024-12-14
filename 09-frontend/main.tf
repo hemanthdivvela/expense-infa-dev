@@ -1,7 +1,7 @@
 module "frontend" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   
-  name = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+  name = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
 
   instance_type          = "t3.micro"
   vpc_security_group_ids = [data.aws_ssm_parameter.frontend_sg_id.value]
@@ -13,7 +13,7 @@ module "frontend" {
   tags = merge(
     var.common_tags,
     {
-      Name = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+      Name = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
     }
   )
 }
@@ -32,16 +32,14 @@ resource "null_resource" "frontend" {
     }
 
     provisioner "file" {
-        source = "${var.common_tags.component}.sh"
-        destination = "/tmp/${var.common_tags.component}.sh"
-      
+        source      = "${var.common_tags.Component}.sh"
+        destination = "/tmp/${var.common_tags.Component}.sh"
     }
-
     # remote server run
     provisioner "remote-exec" {
         inline = [ 
-            "chmod +x /tmp/${var.common_tags.component}.sh",
-            "sudo sh /tmp/${var.common_tags.component}.sh ${var.common_tags.component} ${var.environment}"
+            "chmod +x /tmp/${var.common_tags.Component}.sh",
+            "sudo sh /tmp/${var.common_tags.Component}.sh ${var.common_tags.Component} ${var.environment}"
          ]
       
     }
@@ -57,7 +55,7 @@ resource "aws_ec2_instance_state" "frontend" {
 }
 
 resource "aws_ami_from_instance" "frontend" {
-  name = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+  name = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
   source_instance_id = module.frontend.id
   depends_on = [ aws_ec2_instance_state.frontend ]
 }
@@ -68,7 +66,7 @@ resource "null_resource" "frontend_delete" {
       instance_id = module.frontend.id # this will be triggerd everytime instance is created
     }
 
-        provisioner "local-exec" {
+      provisioner "local-exec" {
         command = "aws ec2 terminate-instances --instance-ids ${module.frontend.id}"
     } 
 
@@ -78,7 +76,7 @@ resource "null_resource" "frontend_delete" {
 #aws traget group and health checks
 
 resource "aws_lb_target_group" "frontend" {
-  name = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+  name = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
   port = 80
   protocol = "HTTP"
   vpc_id = data.aws_ssm_parameter.vpc_id.value
@@ -94,7 +92,7 @@ resource "aws_lb_target_group" "frontend" {
 }
 
 resource "aws_launch_template" "frontend" {
-  name = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+  name = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
 
   image_id = aws_ami_from_instance.frontend.id
 
@@ -111,7 +109,7 @@ resource "aws_launch_template" "frontend" {
     tags = merge(
       var.common_tags,
       {
-        Name = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+        Name = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
       }
     )
   }
@@ -121,7 +119,7 @@ resource "aws_launch_template" "frontend" {
 
 
 resource "aws_autoscaling_group" "frontend" {
-  name                      = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+  name                      = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
   max_size                  = 5
   min_size                  = 1
   health_check_grace_period = 60
@@ -144,7 +142,7 @@ resource "aws_autoscaling_group" "frontend" {
 
   tag {
     key                 = "Name"
-    value               = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+    value               = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
     propagate_at_launch = true
   }
 
@@ -160,7 +158,7 @@ resource "aws_autoscaling_group" "frontend" {
 }
 
 resource "aws_autoscaling_policy" "frontend" {
-  name                   = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+  name                   = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
    policy_type            = "TargetTrackingScaling"
   autoscaling_group_name = aws_autoscaling_group.frontend.name
 
@@ -174,7 +172,7 @@ resource "aws_autoscaling_policy" "frontend" {
 }
 
 resource "aws_lb_listener_rule" "frontend" {
-  listener_arn = data.aws_ssm_parameter.web_alb_listener_arn.value
+  listener_arn = data.aws_ssm_parameter.web_alb_listener_arn_https.value
   priority = 100
 
   action {

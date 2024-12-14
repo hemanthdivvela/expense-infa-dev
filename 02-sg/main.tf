@@ -133,17 +133,15 @@ resource "aws_security_group_rule" "backend_vpn_http" {
   source_security_group_id = module.vpn.sg_id #source is where you are get in traffice
   security_group_id = module.backend.sg_id
 }
-# not required, we can connect from VPN
-# resource "aws_security_group_rule" "frontend_public" {
-#   type              = "ingress"
-#   from_port         = 80
-#   to_port           = 80
-#   protocol          = "tcp"
-#   cidr_blocks = ["0.0.0.0/0"]
-#   security_group_id = module.frontend.sg_id
-# } 
 
-
+resource "aws_security_group_rule" "frontend_web_alb" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  source_security_group_id = module.web_alb.sg_id 
+  security_group_id = module.frontend.sg_id
+}
 
 resource "aws_security_group_rule" "frontend_bastion" {
   type              = "ingress"
@@ -153,6 +151,26 @@ resource "aws_security_group_rule" "frontend_bastion" {
   source_security_group_id = module.bastion.sg_id #source is where you are get in traffice
   security_group_id = module.frontend.sg_id
 } 
+
+resource "aws_security_group_rule" "frontend_vpn" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.vpn.sg_id # source is where you are getting traffic from
+  security_group_id = module.frontend.sg_id
+}
+
+
+# not required, we can connect from VPN
+# resource "aws_security_group_rule" "frontend_public" {
+#   type              = "ingress"
+#   from_port         = 80
+#   to_port           = 80
+#   protocol          = "tcp"
+#   cidr_blocks = ["0.0.0.0/0"]
+#   security_group_id = module.frontend.sg_id
+# } 
 
 resource "aws_security_group_rule" "web_alb_public" {
   type              = "ingress"
