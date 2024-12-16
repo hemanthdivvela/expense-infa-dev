@@ -9,13 +9,14 @@ pipeline {
     }
     
     stages {
-        stage('Build') {
+        stage('Init') {
             steps {
-                sh 'echo Build'
-                sh 'env'
+                sh """
+                    ls -ltr
+                """
             }
         }
-        stage('Test') {
+        stage('Plan') {
             steps {
                 sh 'echo uint-Test'
                 // sh 'sleep 10'
