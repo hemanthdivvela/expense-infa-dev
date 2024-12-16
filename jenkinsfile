@@ -25,7 +25,7 @@ pipeline {
         stage('Plan') {
             when {
                 expression{
-                    parameters.action == "Apply"
+                    parameters.action == 'Apply'
                 }
             }
             steps {
@@ -38,10 +38,9 @@ pipeline {
         stage('Deploy') {
             when {
                 expression{
-                    parameters.action == "Apply"
+                    parameters.action == 'Apply'
                 }
-            }
-            
+            }            
             input {
                 message "Should we continue?"
                 ok "Yes, we should."
@@ -57,7 +56,7 @@ pipeline {
         stage('Destroy') {
             when {
                 expression{
-                    parameters.action == "Destroy"
+                    parameters.action == 'Destroy'
                 }
             }
                
