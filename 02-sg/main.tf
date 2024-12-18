@@ -163,14 +163,14 @@ resource "aws_security_group_rule" "frontend_vpn" {
 
 
 # not required, we can connect from VPN
-# resource "aws_security_group_rule" "frontend_public" {
-#   type              = "ingress"
-#   from_port         = 80
-#   to_port           = 80
-#   protocol          = "tcp"
-#   cidr_blocks = ["0.0.0.0/0"]
-#   security_group_id = module.frontend.sg_id
-# } 
+resource "aws_security_group_rule" "frontend_public" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = module.frontend.sg_id
+} 
 # add a part of Jenkins CICD
 resource "aws_security_group_rule" "backend_default_vpc" {
   type              = "ingress"
